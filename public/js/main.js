@@ -12,25 +12,26 @@ outputRoomName(room);
 
 const socket = io();
 
-socket.emit('joinRoomRequest', {room, username});
+socket.emit('joinRoomRequest', {
+  username, room
+});
 
-socket.on('message', (message) => {
-  console.log('A message is received', message);
+socket.on('chatMessage', (message) => {
   outputMessage(message);
+
   scrollDown();
 });
 
-socket.on('roomUsersUpdate', (users) => {
-  console.log('roomUsersUpdate', users);
+socket.on('roomUsersUpdated', (users) => {
   outputUsers(users);
 });
 
 /**
-* ? outputUsers(users); // renders the users list [ {username: string} ]
+* outputUsers(users); // renders the users list [ {username: string} ]
 *
-* ? outputMessage(message); // renders a message {username: string, text: string, time: string}
+* outputMessage(message); // renders a message {username: string, text: string, time: string}
  *
- * ? scrollDown() // scroll down when a new message is inserted.
+ * scrollDown() // scroll down when a new message is inserted.
 * */
 
 chatForm.addEventListener('submit', (e) => {
@@ -48,7 +49,13 @@ chatForm.addEventListener('submit', (e) => {
   /*
   * Implement logic
   * */
-  socket.emit('message', msg);
+
+
+  socket.emit('chatMessage', {
+    text: msg,
+    username,
+    room
+  });
 
   // Clear input
   e.target.elements.msg.value = '';
